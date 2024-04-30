@@ -40,8 +40,14 @@ class Enemy(pg.sprite.Sprite):
     def rotate(self):
         # calculate distance to next waypoint
         dist = self.target - self.pos
+        print(dist)
         self.angle = math.degrees(math.atan2(-dist[1], dist[0]))
         # rotate image and rectangle
         # self.image = pg.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+        print(self.angle)
+        if self.angle <= -90:
+            self.image = pg.transform.flip(self.original_image, True, False)
+        elif dist[0]+dist[1] != 0:
+            self.image = pg.transform.flip(self.original_image, False, False)
