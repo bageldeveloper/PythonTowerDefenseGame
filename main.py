@@ -8,7 +8,7 @@ pg.init()
 
 clock = pg.time.Clock()
 
-screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
 
 pg.display.set_caption("Tower Defense")
 
@@ -38,8 +38,14 @@ def create_turret(mouse_pos):
     mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
     mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
     if (mouse_tile_x + 1, mouse_tile_y + 1) not in c.PATH_TILES and (mouse_tile_x + 1, mouse_tile_y + 1) not in c.OBSTACLE_TILES:
-        turret = Turret(cursor_turret, mouse_tile_x, mouse_tile_y)
-        turret_group.add(turret)
+        #check if turret is already there:
+        space_is_free = True
+        for turret in turret_group:
+            if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
+                space_is_free = False
+        if space_is_free:
+            new_turret = Turret(cursor_turret, mouse_tile_x, mouse_tile_y)
+            turret_group.add(new_turret)
 
 #CREATE WORLD
 world = World(map_image)
