@@ -17,6 +17,7 @@ pg.display.set_caption("Tower Defense")
 map_image = pg.image.load('assets/images/levels/map.png').convert_alpha()
 
 overlay_map_image = pg.image.load('assets/images/levels/mapoverlay.png').convert_alpha()
+ui_background_image = pg.image.load('assets/images/UI/UI_background.png').convert_alpha()
 
 #individual turret image for mouse
 
@@ -34,6 +35,14 @@ overlay_map_image = pg.transform.scale(overlay_map_image, (880,880))
 
 
 
+ui_background_image = pg.transform.scale(ui_background_image, (440,880))
+
+
+#BUTTONS YIPPEE
+
+buy_turret_image = pg.image.load('')
+
+
 def create_turret(mouse_pos):
     mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
     mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
@@ -48,7 +57,12 @@ def create_turret(mouse_pos):
             turret_group.add(new_turret)
 
 #CREATE WORLD
+
+
 world = World(map_image)
+
+
+
 
 overlay = World(overlay_map_image)
 
@@ -107,6 +121,8 @@ while run:
                 create_turret(mouse_pos)
 
     overlay.draw(screen)
+
+    screen.blit(ui_background_image, (880,0))
     pg.display.flip()
 
 pg.quit()
