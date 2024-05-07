@@ -26,11 +26,17 @@ ui_background_image = pg.image.load('assets/images/UI/UI_background.png').conver
 
 cursor_turret = pg.image.load('assets/images/towers/frog.png').convert_alpha()
 
+#turretspritesheets
+
+turret_sheet = pg.image.load('assets/images/towers/frogspritesheet.png').convert_alpha()
+
 enemy_image = pg.image.load('assets/images/enemies/fly.png').convert_alpha()
 
 enemy_image = pg.transform.scale(enemy_image, (80,80))
 
 cursor_turret = pg.transform.scale(cursor_turret, (80,80))
+
+turret_sheet = pg.transform.scale(turret_sheet, (240,80))
 
 map_image = pg.transform.scale(map_image, (880,880))
 
@@ -64,7 +70,7 @@ def create_turret(mouse_pos):
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 space_is_free = False
         if space_is_free:
-            new_turret = Turret(cursor_turret, mouse_tile_x, mouse_tile_y)
+            new_turret = Turret(turret_sheet, mouse_tile_x, mouse_tile_y)
             turret_group.add(new_turret)
 
 def display_turret():
@@ -72,22 +78,27 @@ def display_turret():
     cursor_pos = pg.mouse.get_pos()
     cursor_rect.center = cursor_pos
 
-    mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
-    mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
-    if cursor_pos[0] >= c.SCREEN_WIDTH:
-        return
-    if (mouse_tile_x + 1, mouse_tile_y + 1) not in c.PATH_TILES and (mouse_tile_x + 1, mouse_tile_y + 1) not in c.OBSTACLE_TILES:
-        #check if turret is already there:
-        space_is_free = True
-        for turret in turret_group:
-            if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
-                space_is_free = False
-        if space_is_free:
+    mouse_tile_x = cursor_pos[0] // c.TILE_SIZE
+    mouse_tile_y = cursor_pos[1] // c.TILE_SIZE
+    
+    if cursor_pos[0] < c.SCREEN_WIDTH:
+        if (mouse_tile_x + 1, mouse_tile_y + 1) not in c.PATH_TILES and (mouse_tile_x + 1, mouse_tile_y + 1) not in c.OBSTACLE_TILES:
+            #check if turret is already there:
+            space_is_free = True
+            for turret in turret_group:
+                if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
+                    space_is_free = False
+            if space_is_free:
+                draw_pos = ((mouse_tile_x) * c.TILE_SIZE,(mouse_tile_y) * c.TILE_SIZE)
+                opaque_cursor_turret = cursor_turret.copy()
+                opaque_cursor_turret.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
+                screen.blit(opaque_cursor_turret, draw_pos)
+                
+        else:
+            draw_pos = ((mouse_tile_x) * c.TILE_SIZE,(mouse_tile_y) * c.TILE_SIZE)
             opaque_cursor_turret = cursor_turret.copy()
-            opaque_cursor_turret.fill((255, 255, 255, 128), None, pg.BLEND_RGBA_MULT)
-            screen.blit(opaque_cursor_turret, cursor_rect)
-    else:
-        screen.blit(cursor_turret, cursor_rect)
+            opaque_cursor_turret.fill((255, 50, 50, 128), None, pg.BLEND_RGBA_MULT)
+            screen.blit(opaque_cursor_turret, draw_pos)
 
 
 #CREATE WORLD
@@ -150,6 +161,8 @@ while run:
     ####################################
     # UPDATING SECTION
     ##################################
+
+    turret_group.update()
 
     enemy_group.update()
 
