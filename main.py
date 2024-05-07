@@ -14,6 +14,7 @@ pg.display.set_caption("Tower Defense")
 
 #game variables
 placing_turrets = False
+selected_turret = None
 
 #LOAD IMAGES
 
@@ -70,9 +71,20 @@ def create_turret(mouse_pos):
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 space_is_free = False
         if space_is_free:
-            new_turret = Turret(turret_sheet, mouse_tile_x, mouse_tile_y)
+            new_turret = Turret(turret_sheet, mouse_tile_x, mouse_tile_y, screen)
             turret_group.add(new_turret)
 
+def select_turret(mouse_pos):
+    mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
+    mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
+    for turret in turret_group:
+            if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
+                return turret
+        #check if turret is already there:
+
+def clear_selection():
+    for turret in turret_group:
+        turret.selected = False
 def display_turret():
     cursor_rect = cursor_turret.get_rect()
     cursor_pos = pg.mouse.get_pos()
@@ -162,16 +174,21 @@ while run:
     # UPDATING SECTION
     ##################################
 
-    turret_group.update()
+    turret_group.update(enemy_group)
 
     enemy_group.update()
+
+    #highlight selected turret
+    if selected_turret:
+        selected_turret.selected = True
 
     ####################################
     # DRAW SECTION
     ##################################
 
     enemy_group.draw(screen)
-    turret_group.draw(screen)
+    for turret in turret_group:
+        turret.draw(screen)
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -181,8 +198,12 @@ while run:
             mouse_pos = pg.mouse.get_pos()
             #check if mouse on game are
             if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
+                selected_turret = None
+                clear_selection()
                 if placing_turrets:
                     create_turret(mouse_pos)
+                else:
+                    selected_turret = select_turret(mouse_pos)
 
     ####################################
     # DRAW OVERLAY SECTION
