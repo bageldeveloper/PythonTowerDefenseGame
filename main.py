@@ -52,10 +52,15 @@ ui_background_image = pg.transform.scale(ui_background_image, (440,880))
 
 buy_turret_image = pg.image.load('assets/images/UI/buyturret.png').convert_alpha()
 cancel_image = pg.image.load('assets/images/UI/cancel.png').convert_alpha()
+upgrade_image = pg.image.load('assets/images/UI/upgrade.png').convert_alpha()
 
 buy_turret_image = pg.transform.scale(buy_turret_image, (150,50))
 
 cancel_image = pg.transform.scale(cancel_image, (150,50))
+
+
+upgrade_image = pg.transform.scale(upgrade_image, (150,50))
+
 
 
 
