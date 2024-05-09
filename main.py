@@ -28,8 +28,9 @@ ui_background_image = pg.image.load('assets/images/UI/UI_background.png').conver
 cursor_turret = pg.image.load('assets/images/towers/frog.png').convert_alpha()
 
 #turretspritesheets
-
-turret_sheet = pg.image.load('assets/images/towers/frogspritesheet.png').convert_alpha()
+turret_spritesheets = []
+for x in range(1, c.TURRET_LEVELS+1):
+    turret_sheet = pg.image.load(f'assets/images/towers/frogspritesheet_{x}.png').convert_alpha()
 
 enemy_image = pg.image.load('assets/images/enemies/fly.png').convert_alpha()
 
@@ -76,7 +77,7 @@ def create_turret(mouse_pos):
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 space_is_free = False
         if space_is_free:
-            new_turret = Turret(turret_sheet, mouse_tile_x, mouse_tile_y, screen)
+            new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, screen)
             turret_group.add(new_turret)
 
 def select_turret(mouse_pos):
@@ -158,6 +159,7 @@ enemy_group.add(enemy)
 #create buttons
 turret_button = Button(c.SCREEN_WIDTH + 70, 30, buy_turret_image, True)
 cancel_button = Button(c.SCREEN_WIDTH + 70, 30, cancel_image, True)
+upgrade_button = Button(c.SCREEN_WIDTH + 70, 30, upgrade_image, True)
 
 
 run = True
@@ -222,13 +224,21 @@ while run:
 
     screen.blit(ui_background_image, (880,0))
 
-    if turret_button.draw(screen) and placing_turrets == False:
-        placing_turrets = True
+    if selected_turret == None:
 
-    if placing_turrets:
-        display_turret()
-        if cancel_button.draw(screen):
-            placing_turrets = False
+        if turret_button.draw(screen) and placing_turrets == False:
+            placing_turrets = True
+
+        if placing_turrets:
+            display_turret()
+            if cancel_button.draw(screen):
+                placing_turrets = False
+        
+    else:
+        #if can be upgraded show button
+        if selected_turret.upgrade_level < c.TURRET_LEVELS:
+            if upgrade_button.draw(screen):
+                selected_turret.upgrade()
 
 
     ####################################

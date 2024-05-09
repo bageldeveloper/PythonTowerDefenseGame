@@ -25,7 +25,7 @@ class Turret(pg.sprite.Sprite):
         #animations vars
         self.screen = screen
         self.sprite_sheet = sprite_sheet
-        self.animation_list = self.load_images()
+        self.animation_list = self.load_images(self.sprite_sheets[self.upgrade_level - 1])
         self.frame_index = 0
         self.update_time = pg.time.get_ticks()
 
@@ -43,11 +43,11 @@ class Turret(pg.sprite.Sprite):
         self.range_rect = self.range_image.get_rect()
         self.range_rect.center = self.rect.center
     
-    def load_images(self):
+    def load_images(self, current_sheet):
         size = self.sprite_sheet.get_height()
         animation_list = []
         for x in range(c.ANIMATION_STEPS):
-            temp_img = self.sprite_sheet.subsurface(x * size, 0, size, size)
+            temp_img = self.current_sheet.subsurface(x * size, 0, size, size)
             animation_list.append(temp_img)
         return animation_list
     
