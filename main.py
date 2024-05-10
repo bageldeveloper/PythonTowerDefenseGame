@@ -13,6 +13,7 @@ screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
 pg.display.set_caption("Tower Defense")
 
 #game variables
+last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
 
@@ -31,14 +32,22 @@ cursor_turret = pg.image.load('assets/images/towers/frog.png').convert_alpha()
 turret_spritesheets = []
 for x in range(1, c.TURRET_LEVELS+1):
     turret_sheet = pg.image.load(f'assets/images/towers/frogspritesheet_{x}.png').convert_alpha()
+    turret_sheet = pg.transform.scale(turret_sheet, (240, 80))
+    turret_spritesheets.append(turret_sheet)
 
-enemy_image = pg.image.load('assets/images/enemies/fly.png').convert_alpha()
+enemy_images = {
+    "fly": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80,80)),
+    "ant": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
+    "mosquito": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
+    "cockroach": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
 
-enemy_image = pg.transform.scale(enemy_image, (80,80))
+}
+
+
 
 cursor_turret = pg.transform.scale(cursor_turret, (80,80))
 
-turret_sheet = pg.transform.scale(turret_sheet, (240,80))
+
 
 map_image = pg.transform.scale(map_image, (880,880))
 
@@ -123,6 +132,7 @@ def display_turret():
 
 
 world = World(map_image)
+world.process_enemies()
 
 
 
@@ -152,9 +162,7 @@ waypoints = [
     (920, 600)
 ]
 
-enemy = Enemy(waypoints, enemy_image)
 
-enemy_group.add(enemy)
 
 #create buttons
 turret_button = Button(c.SCREEN_WIDTH + 70, 30, buy_turret_image, True)
@@ -197,6 +205,14 @@ while run:
     for turret in turret_group:
         turret.draw(screen)
 
+    #spawn enemies
+    if pg.time.get_ticks() - last_enemy_spawn > c.SPAWN_COOLDOWN:
+        if world.spawned_enemies < len(world.enemy_list):
+            enemy_type = world.enemy_list[world.spawned_enemies]
+            enemy = Enemy(enemy_type, waypoints, enemy_images)
+            enemy_group.add(enemy)
+            world.spawned_enemies+=1
+            last_enemy_spawn = pg.time.get_ticks()
     for event in pg.event.get():
         if event.type == pg.QUIT:
             run = False

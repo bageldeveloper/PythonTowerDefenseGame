@@ -9,10 +9,10 @@ TURRET_DATA = [
     },
     {
         "range": 200,
-        "cooldown": 1000,
+        "cooldown": 250,
     },
     {
         "range": 250,
-        "cooldown": 900,
+        "cooldown": 50,
     },
 ]

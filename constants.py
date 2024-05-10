@@ -76,3 +76,7 @@ OBSTACLE_TILES = [
 (10, 4),
 (11, 4),
 ]
+
+
+#enemy constants
+SPAWN_COOLDOWN =400

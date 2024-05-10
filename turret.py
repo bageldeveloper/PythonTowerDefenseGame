@@ -5,7 +5,7 @@ from turret_data import TURRET_DATA
 
 
 class Turret(pg.sprite.Sprite):
-    def __init__(self,sprite_sheet,tile_x,tile_y, screen):
+    def __init__(self,sprite_sheets,tile_x,tile_y, screen):
         pg.sprite.Sprite.__init__(self)
         self.upgrade_level = 1
         self.range = TURRET_DATA[self.upgrade_level-1].get("range")
@@ -24,7 +24,7 @@ class Turret(pg.sprite.Sprite):
 
         #animations vars
         self.screen = screen
-        self.sprite_sheet = sprite_sheet
+        self.sprite_sheets = sprite_sheets
         self.animation_list = self.load_images(self.sprite_sheets[self.upgrade_level - 1])
         self.frame_index = 0
         self.update_time = pg.time.get_ticks()
@@ -44,10 +44,10 @@ class Turret(pg.sprite.Sprite):
         self.range_rect.center = self.rect.center
     
     def load_images(self, current_sheet):
-        size = self.sprite_sheet.get_height()
+        size = current_sheet.get_height()
         animation_list = []
         for x in range(c.ANIMATION_STEPS):
-            temp_img = self.current_sheet.subsurface(x * size, 0, size, size)
+            temp_img = current_sheet.subsurface(x * size, 0, size, size)
             animation_list.append(temp_img)
         return animation_list
     
@@ -93,7 +93,10 @@ class Turret(pg.sprite.Sprite):
         self.upgrade_level += 1
         self.range = TURRET_DATA[self.upgrade_level-1].get("range")
         self.cooldown = TURRET_DATA[self.upgrade_level-1].get("cooldown")
-         #upgrade range circle
+        #upgraded turret image
+        self.animation_list = self.load_images(self.sprite_sheets[self.upgrade_level - 1])
+        self.image = self.animation_list[self.frame_index]
+        #upgrade range circle
         self.range_image = pg.Surface((self.range *2, self.range * 2))
         self.range_image.fill((0,0,0))
         self.range_image.set_colorkey((0,0,0))
@@ -106,10 +109,19 @@ class Turret(pg.sprite.Sprite):
         if self.selected:
             surface.blit(self.range_image, self.range_rect)
         surface.blit(self.image, self.rect)
-        if self.target:
-            self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ea6262", 20)
-        elif 1 - self.tounge * 1.8 > 0.1:
-            self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ea6262", 20)
+        if self.upgrade_level < 4:
+            if self.target:
+                self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ea6262", 20)
+            elif 1 - self.tounge * 1.8 > 0.1:
+                self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ea6262", 20)
+        else:
+            if self.target:
+                self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ff0034", 20)
+                self.draw_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.target.pos, "#ffdfe6", 10)
+            elif 1 - self.tounge * 1.8 > 0.1:
+                self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ff0034", 20)
+                self.draw_retract_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.last_tounge_pos,
+                                                     "#ffdfe6", 10)
             
 
     def draw_line_round_corners(self, surf, p1, p2, c, w):
