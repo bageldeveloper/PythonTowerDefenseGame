@@ -67,12 +67,16 @@ class Turret(pg.sprite.Sprite):
         y_dist = 0
         #check if distance to each enemy is in range
         for enemy in enemy_group:
-            x_dist = enemy.pos[0] - self.x
-            y_dist = enemy.pos[0] - self.y
-            dist = math.sqrt(x_dist ** 2+ y_dist ** 2)
-            if dist < self.range:
-                self.target = enemy
-                self.tounge = 1
+            if enemy.health > 0:
+                x_dist = enemy.pos[0] - self.x
+                y_dist = enemy.pos[1] - self.y
+                dist = math.sqrt(x_dist ** 2+ y_dist ** 2)
+                if dist < self.range:
+                    self.target = enemy
+                    self.tounge = 1
+
+                    self.target.health -= c.DAMAGE
+                    break
 
     def play_animation(self):
         #update image
