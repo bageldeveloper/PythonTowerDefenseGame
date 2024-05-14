@@ -4,6 +4,7 @@ import random
 import constants as c
 class World():
     def __init__(self, map_image):
+        self.game_speed = 1
         self.level = 1
         self.health = c.HEALTH
         self.money = c.MONEY

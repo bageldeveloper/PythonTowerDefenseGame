@@ -51,13 +51,13 @@ class Turret(pg.sprite.Sprite):
             animation_list.append(temp_img)
         return animation_list
     
-    def update(self, enemy_group):
+    def update(self, enemy_group, world):
         #if target picked, play firin anim
         if self.target:
             self.play_animation()
         else:
             #search for new target once turret cooled down
-            if pg.time.get_ticks() - self.last_shot > self.cooldown:
+            if pg.time.get_ticks() - self.last_shot > (self.cooldown / world.game_speed):
 
                 self.pick_target(enemy_group)
 
@@ -116,16 +116,20 @@ class Turret(pg.sprite.Sprite):
         if self.upgrade_level < 4:
             if self.target:
                 self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ea6262", 20)
-            elif 1 - self.tounge * 1.8 > 0.1:
+            elif 1 - (self.tounge * 1.8) > 0.2:
                 self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ea6262", 20)
+            else:
+                self.tounge = 1
         else:
             if self.target:
                 self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ff0034", 20)
                 self.draw_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.target.pos, "#ffdfe6", 10)
-            elif 1 - self.tounge * 1.8 > 0.1:
+            elif 1 - (self.tounge * 1.8) > 0.2:
                 self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ff0034", 20)
                 self.draw_retract_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.last_tounge_pos,
                                                      "#ffdfe6", 10)
+            else:
+                self.tounge = 1
             
 
     def draw_line_round_corners(self, surf, p1, p2, c, w):

@@ -66,15 +66,21 @@ ui_background_image = pg.transform.scale(ui_background_image, (440,880))
 buy_turret_image = pg.image.load('assets/images/UI/buyturret.png').convert_alpha()
 cancel_image = pg.image.load('assets/images/UI/cancel.png').convert_alpha()
 upgrade_image = pg.image.load('assets/images/UI/upgrade.png').convert_alpha()
-begin_image = pg.image.load('assets/images/UI/upgrade.png').convert_alpha()
+begin_image = pg.image.load('assets/images/UI/begin.png').convert_alpha()
+restart_image = pg.image.load('assets/images/UI/restart.png').convert_alpha()
+win_image = pg.image.load('assets/images/UI/resart_win.png').convert_alpha()
+fast_image = pg.image.load('assets/images/UI/resart_win.png').convert_alpha()
+
 buy_turret_image = pg.transform.scale(buy_turret_image, (150,50))
 
 cancel_image = pg.transform.scale(cancel_image, (150,50))
 
 
 upgrade_image = pg.transform.scale(upgrade_image, (150,50))
-begin_image = pg.transform.scale(cancel_image, (150,50))
-
+begin_image = pg.transform.scale(begin_image, (150,50))
+restart_image = pg.transform.scale(restart_image, (150,50))
+win_image = pg.transform.scale(win_image, (150,50))
+fast_image = pg.transform.scale(fast_image, (50,50))
 
 #load fonts for text
 text_font = pg.font.SysFont("Consolas", 24, bold = True)
@@ -112,6 +118,13 @@ def select_turret(mouse_pos):
 def clear_selection():
     for turret in turret_group:
         turret.selected = False
+
+def display_data():
+    #draw panel
+
+    draw_text(str(world.health), text_font, "white", c.SCREEN_WIDTH+ 90, 10)
+    draw_text(str(world.money), text_font, "white", c.SCREEN_WIDTH + 230, 10)
+    draw_text(str(world.level), text_font, "white", c.SCREEN_WIDTH + 370, 10)
 def display_turret():
     cursor_rect = cursor_turret.get_rect()
     cursor_pos = pg.mouse.get_pos()
@@ -181,7 +194,9 @@ turret_button = Button(c.SCREEN_WIDTH + 70, 30, buy_turret_image, True)
 cancel_button = Button(c.SCREEN_WIDTH + 70, 30, cancel_image, True)
 upgrade_button = Button(c.SCREEN_WIDTH + 70, 30, upgrade_image, True)
 begin_button = Button(c.SCREEN_WIDTH + 70, 300, begin_image, True)
-
+restart_button = Button(360, 440, restart_image, True)
+win_button = Button(360, 440, win_image, True)
+fast_button = Button(c.SCREEN_WIDTH + 70, 200, fast_image, False)
 run = True
 
 while run:
@@ -205,16 +220,23 @@ while run:
         if world.health <= 0:
             game_over = True
             game_outcome = -1
+        #check if player won
+        if world.level > c.TOTAL_LEVELS:
+            game_over = True
+            game_outcome = 1 #win!!!!!!!
 
-        turret_group.update(enemy_group)
 
         enemy_group.update(world)
+        turret_group.update(enemy_group, world)
+
+
 
 
 
     #highlight selected turret
         if selected_turret:
             selected_turret.selected = True
+
 
     ####################################
     # DRAW SECTION
@@ -223,32 +245,34 @@ while run:
     enemy_group.draw(screen)
     for turret in turret_group:
         turret.draw(screen)
+    world.game_speed = 1
 
+    if pg.time.get_ticks() - last_enemy_spawn > c.SPAWN_COOLDOWN and level_started:
+        if world.spawned_enemies < len(world.enemy_list):
+            enemy_type = world.enemy_list[world.spawned_enemies]
+            enemy = Enemy(enemy_type, waypoints, enemy_images)
+            enemy_group.add(enemy)
+            world.spawned_enemies += 1
+            last_enemy_spawn = pg.time.get_ticks()
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            run = False
+        # mouse click
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = pg.mouse.get_pos()
+            # check if mouse on game are
+            if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
+                selected_turret = None
+                clear_selection()
+                if placing_turrets:
+                    if world.money >= c.BUY_COST:
+                        create_turret(mouse_pos)
+                else:
+                    selected_turret = select_turret(mouse_pos)
     #check if level has been started or not
     if game_over == False:
         #spawn enemies
-        if pg.time.get_ticks() - last_enemy_spawn > c.SPAWN_COOLDOWN and level_started:
-            if world.spawned_enemies < len(world.enemy_list):
-                enemy_type = world.enemy_list[world.spawned_enemies]
-                enemy = Enemy(enemy_type, waypoints, enemy_images)
-                enemy_group.add(enemy)
-                world.spawned_enemies+=1
-                last_enemy_spawn = pg.time.get_ticks()
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                run = False
-            #mouse click
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = pg.mouse.get_pos()
-                #check if mouse on game are
-                if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
-                    selected_turret = None
-                    clear_selection()
-                    if placing_turrets:
-                        if world.money >= c.BUY_COST:
-                            create_turret(mouse_pos)
-                    else:
-                        selected_turret = select_turret(mouse_pos)
+
 
         if world.check_level_complete():
             world.money += c.LEVEL_COMPLETE_REWARD
@@ -281,6 +305,8 @@ while run:
         if level_started == False:
             if begin_button.draw(screen):
                 level_started = True
+        if fast_button.draw(screen):
+            world.game_speed = 2
     else:
         #if can be upgraded show button
         if selected_turret.upgrade_level < c.TURRET_LEVELS:
@@ -290,9 +316,57 @@ while run:
                     world.money -= c.UPGRADE_COST
    
     #display text
-    draw_text(str(world.health), text_font, "white", 0, 0)
-    draw_text(str(world.money), text_font, "white", 0, 30)
-    draw_text(str(world.level), text_font, "white", 0, 60)
+    display_data()
+
+
+    if game_over:
+        if game_outcome == 1:
+            shape_surf = pg.Surface(pg.Rect((0, 0, 880, 880)).size, pg.SRCALPHA)
+            pg.draw.rect(shape_surf, (0, 50, 0, 120), shape_surf.get_rect(), )
+            screen.blit(shape_surf, (0, 0, 880, 880))
+
+            shape_surf = pg.Surface(pg.Rect((240,340,400,200)).size, pg.SRCALPHA)
+            pg.draw.rect(shape_surf, (0,255, 0, 120), shape_surf.get_rect(), border_radius = 30)
+            screen.blit(shape_surf, (240,340,400,200))
+
+            # pg.draw.rect(screen, "#ea6262", (240,340,400,200), border_radius = 30)
+
+            draw_text("YOU WIN", big_font, "#ffffff", 350, 380)
+            if win_button.draw(screen):
+                game_over = False
+                level_started = False
+                placing_turrets = False
+                selected_turret = None
+                last_enemy_spawn = pg.time.get_ticks()
+                world = World(map_image)
+                world.process_enemies()
+                # clear enemies and turrets
+                enemy_group.empty()
+                turret_group.empty()
+        else:
+            shape_surf = pg.Surface(pg.Rect((0, 0, 880, 880)).size, pg.SRCALPHA)
+            pg.draw.rect(shape_surf, (50, 0, 0, 120), shape_surf.get_rect(), )
+            screen.blit(shape_surf, (0, 0, 880, 880))
+
+            shape_surf = pg.Surface(pg.Rect((240, 340, 400, 200)).size, pg.SRCALPHA)
+            pg.draw.rect(shape_surf, (255, 0, 0, 120), shape_surf.get_rect(), border_radius=30)
+            screen.blit(shape_surf, (240, 340, 400, 200))
+
+            # pg.draw.rect(screen, "#ea6262", (240,340,400,200), border_radius = 30)
+
+            draw_text("GAME OVER", big_font, "#ffffff", 340, 380)
+            if restart_button.draw(screen):
+                game_over = False
+                level_started = False
+                placing_turrets = False
+                selected_turret = None
+                last_enemy_spawn = pg.time.get_ticks()
+                world = World(map_image)
+                world.process_enemies()
+                # clear enemies and turrets
+                enemy_group.empty()
+                turret_group.empty()
+
 
     ####################################
     # SCREEN DISPLAY SECTION
