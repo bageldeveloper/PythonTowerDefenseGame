@@ -40,7 +40,7 @@ ENEMY_SPAWN_DATA = [
 ENEMY_DATA = {
     "fly": {
         "flying": True,
-        "health": 10,
+        "health": 5,
         "speed": 2
     },
     "ant": {

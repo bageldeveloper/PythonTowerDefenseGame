@@ -4,6 +4,7 @@ from world import World
 from turret import Turret
 import constants as c
 from button import Button
+import turret_data as t
 pg.init()
 
 clock = pg.time.Clock()
@@ -311,9 +312,9 @@ while run:
         #if can be upgraded show button
         if selected_turret.upgrade_level < c.TURRET_LEVELS:
             if upgrade_button.draw(screen):
-                if world.money >= c.UPGRADE_COST:
+                if world.money >= t.TURRET_DATA[selected_turret.upgrade_level].get("cost"):
                     selected_turret.upgrade()
-                    world.money -= c.UPGRADE_COST
+                    world.money -=  t.TURRET_DATA[selected_turret.upgrade_level-1].get("cost")
    
     #display text
     display_data()

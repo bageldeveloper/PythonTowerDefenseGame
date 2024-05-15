@@ -124,7 +124,7 @@ class Turret(pg.sprite.Sprite):
             if self.target:
                 self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ff0034", 20)
                 self.draw_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.target.pos, "#ffdfe6", 10)
-            elif 1 - (self.tounge * 1.8) > 0.2:
+            elif 1 - (self.tounge * 1.8) > 0.3:
                 self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ff0034", 20)
                 self.draw_retract_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.last_tounge_pos,
                                                      "#ffdfe6", 10)
@@ -135,12 +135,12 @@ class Turret(pg.sprite.Sprite):
     def draw_line_round_corners(self, surf, p1, p2, c, w):
         self.tounge = self.tounge * 0.8
         pg.draw.line(surf, c, p1, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w)
-        pg.draw.circle(surf, c, p1, w // 2)
-        pg.draw.circle(surf, c, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w // 2)
+        pg.draw.circle(surf, c, p1, w / 2)
+        pg.draw.circle(surf, c, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w / 2)
         self.last_tounge_pos =  (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge))
     
     def draw_retract_line_round_corners(self, surf, p1, p2, c, w):
         self.tounge = self.tounge * 1.8
         pg.draw.line(surf, c, p1, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w)
-        pg.draw.circle(surf, c, p1, w // 2)
-        pg.draw.circle(surf, c, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w // 2)
+        pg.draw.circle(surf, c, p1, w / 2)
+        pg.draw.circle(surf, c, (p1[0] + (p2[0] - p1[0]) * (1 - self.tounge), p1[1] + (p2[1] - p1[1]) * (1 - self.tounge)), w / 2)
