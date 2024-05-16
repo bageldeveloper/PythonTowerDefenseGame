@@ -20,3 +20,5 @@ TURRET_DATA = [
         "cooldown": 100,
     },
 ]
+
+FROG_COST = 100

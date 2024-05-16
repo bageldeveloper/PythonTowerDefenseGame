@@ -31,7 +31,7 @@ class Enemy(pg.sprite.Sprite):
         else:
             # enemy is at end of path, it has served its purpose and must be eliminated
             world.health -= 1
-            world.missed_enemies = 1
+            world.missed_enemies += 1
             self.kill()
         # calculate distance to target hehe
         dist = self.movement.length()

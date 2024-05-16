@@ -64,24 +64,24 @@ ui_background_image = pg.transform.scale(ui_background_image, (440,880))
 
 #BUTTONS YIPPEE
 
-buy_turret_image = pg.image.load('assets/images/UI/buyturret.png').convert_alpha()
+buy_turret_image = pg.image.load('assets/images/UI/frog_buy.png').convert_alpha()
 cancel_image = pg.image.load('assets/images/UI/cancel.png').convert_alpha()
 upgrade_image = pg.image.load('assets/images/UI/upgrade.png').convert_alpha()
 begin_image = pg.image.load('assets/images/UI/begin.png').convert_alpha()
 restart_image = pg.image.load('assets/images/UI/restart.png').convert_alpha()
 win_image = pg.image.load('assets/images/UI/resart_win.png').convert_alpha()
-fast_image = pg.image.load('assets/images/UI/resart_win.png').convert_alpha()
+fast_image = pg.image.load('assets/images/UI/fast_forward.png').convert_alpha()
 
-buy_turret_image = pg.transform.scale(buy_turret_image, (150,50))
+buy_turret_image = pg.transform.scale(buy_turret_image, (150,150))
 
-cancel_image = pg.transform.scale(cancel_image, (150,50))
+cancel_image = pg.transform.scale(cancel_image, (240,80))
 
 
-upgrade_image = pg.transform.scale(upgrade_image, (150,50))
-begin_image = pg.transform.scale(begin_image, (150,50))
+upgrade_image = pg.transform.scale(upgrade_image, (240,80))
+begin_image = pg.transform.scale(begin_image, (240,80))
 restart_image = pg.transform.scale(restart_image, (150,50))
 win_image = pg.transform.scale(win_image, (150,50))
-fast_image = pg.transform.scale(fast_image, (50,50))
+fast_image = pg.transform.scale(fast_image, (100,100))
 
 #load fonts for text
 text_font = pg.font.SysFont("Consolas", 24, bold = True)
@@ -123,9 +123,10 @@ def clear_selection():
 def display_data():
     #draw panel
 
-    draw_text(str(world.health), text_font, "white", c.SCREEN_WIDTH+ 90, 10)
-    draw_text(str(world.money), text_font, "white", c.SCREEN_WIDTH + 230, 10)
-    draw_text(str(world.level), text_font, "white", c.SCREEN_WIDTH + 370, 10)
+    draw_text(str(world.health), text_font, "white", c.SCREEN_WIDTH+ 120, 25)
+    draw_text(str(world.level), text_font, "white", c.SCREEN_WIDTH + 240, 25)
+    draw_text(str(world.money), text_font, "white", c.SCREEN_WIDTH + 370, 25)
+
 def display_turret():
     cursor_rect = cursor_turret.get_rect()
     cursor_pos = pg.mouse.get_pos()
@@ -191,13 +192,13 @@ waypoints = [
 
 
 #create buttons
-turret_button = Button(c.SCREEN_WIDTH + 70, 30, buy_turret_image, True)
-cancel_button = Button(c.SCREEN_WIDTH + 70, 30, cancel_image, True)
-upgrade_button = Button(c.SCREEN_WIDTH + 70, 30, upgrade_image, True)
-begin_button = Button(c.SCREEN_WIDTH + 70, 300, begin_image, True)
+turret_button = Button(c.SCREEN_WIDTH + 45, 250, buy_turret_image, True)
+cancel_button = Button(c.SCREEN_WIDTH + 180, 670, cancel_image, True)
+upgrade_button = Button(c.SCREEN_WIDTH + 180, 775, upgrade_image, True)
+begin_button = Button(c.SCREEN_WIDTH + 180, 775, begin_image, True)
 restart_button = Button(360, 440, restart_image, True)
 win_button = Button(360, 440, win_image, True)
-fast_button = Button(c.SCREEN_WIDTH + 70, 200, fast_image, False)
+fast_button = Button(c.SCREEN_WIDTH + 45, 760, fast_image, False)
 run = True
 
 while run:
@@ -308,6 +309,7 @@ while run:
                 level_started = True
         if fast_button.draw(screen):
             world.game_speed = 2
+        draw_text(str(t.FROG_COST), text_font, "white", c.SCREEN_WIDTH + 103, 365)
     else:
         #if can be upgraded show button
         if selected_turret.upgrade_level < c.TURRET_LEVELS:
