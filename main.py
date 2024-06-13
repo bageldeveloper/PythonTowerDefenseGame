@@ -5,6 +5,8 @@ from turret import Turret
 import constants as c
 from button import Button
 import turret_data as t
+from pygame import mixer
+
 pg.init()
 
 clock = pg.time.Clock()
@@ -20,6 +22,20 @@ level_started = False
 last_enemy_spawn = pg.time.get_ticks()
 placing_turrets = False
 selected_turret = None
+
+#load music
+
+# Starting the mixer 
+mixer.init() 
+  
+# Loading the song 
+mixer.music.load("assets/audio/music/frogsong1.wav") 
+  
+# Setting the volume 
+mixer.music.set_volume(0.7) 
+  
+# Start playing the song 
+mixer.music.play() 
 
 #LOAD IMAGES
 
@@ -40,11 +56,11 @@ for x in range(1, c.TURRET_LEVELS+1):
     turret_spritesheets.append(turret_sheet)
 
 enemy_images = {
-    "fly": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80,80)),
+    "fly": pg.transform.scale(pg.image.load('assets/images/enemies/flysheet.png').convert_alpha(), (320,80)),
     "ant": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     "mosquito": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     "cockroach": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
-
+    
 }
 
 
@@ -252,7 +268,7 @@ while run:
     if pg.time.get_ticks() - last_enemy_spawn > c.SPAWN_COOLDOWN and level_started:
         if world.spawned_enemies < len(world.enemy_list):
             enemy_type = world.enemy_list[world.spawned_enemies]
-            enemy = Enemy(enemy_type, waypoints, enemy_images)
+            enemy = Enemy(enemy_type, waypoints, enemy_images, screen)
             enemy_group.add(enemy)
             world.spawned_enemies += 1
             last_enemy_spawn = pg.time.get_ticks()

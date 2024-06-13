@@ -5,7 +5,7 @@ import constants as c
 from enemy_data import ENEMY_DATA
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, enemy_type, waypoints, images):
+    def __init__(self, enemy_type, waypoints, images, screen):
         pg.sprite.Sprite.__init__(self)
         self.waypoints = waypoints
         self.pos = Vector2(self.waypoints[0])
@@ -13,15 +13,42 @@ class Enemy(pg.sprite.Sprite):
         self.health = ENEMY_DATA.get(enemy_type)["health"]
         self.speed = ENEMY_DATA.get(enemy_type)["speed"]
         self.angle = 0
-        self.original_image = images.get(enemy_type)
-        self.image = pg.transform.rotate(self.original_image, self.angle)
+    
+
+        self.screen = screen
+        self.animation_list = self.load_images(images.get(enemy_type))
+        self.frame_index = 0
+        self.update_time = pg.time.get_ticks()
+
+
+        self.image = self.animation_list[self.frame_index]
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
+    
+    def load_images(self, current_sheet):
+        size = current_sheet.get_height()
+        animation_list = []
+        sheet_width = current_sheet.get_width()
+
+
+
+        for x in range(c.ENEMY_ANIMATION_STEPS):
+            # Ensure the subsurface rectangle does not exceed the sheet width
+            if (x + 1) * size <= sheet_width:
+                try:
+                    temp_img = current_sheet.subsurface(x * size, 0, size, size)
+                    animation_list.append(temp_img)
+                except ValueError as e:
+                                      break
+            else:
+                break
+
+        return animation_list
 
     def update(self, world):
         self.move(world)
         self.rotate()
         self.check_alive(world)
+        self.play_animation()
 
     def move(self, world):
         # define target waypoint
@@ -52,12 +79,28 @@ class Enemy(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if self.angle <= -90:
-            self.image = pg.transform.flip(self.original_image, True, False)
+            self.image = pg.transform.flip(self.image, True, False)
         elif dist[0]+dist[1] != 0:
-            self.image = pg.transform.flip(self.original_image, False, False)
+            self.image = pg.transform.flip(self.image, False, False)
     
     def check_alive(self, world):
         if self.health <= 0:
             world.killed_enemies += 1
             world.money += c.KILL_REWARD
             self.kill()
+
+    def play_animation(self):
+        #update image
+        self.image = self.animation_list[self.frame_index]
+        #check if enough time has passed
+        if pg.time.get_ticks() - self.update_time > c.ANIMATION_DELAY:
+            self.update_time = pg.time.get_ticks()
+            self.frame_index += 1
+            #check if animation is done
+            if self.frame_index >= len(self.animation_list):
+                self.frame_index = 0
+                #record completed time and clear target
+                self.last_shot = pg.time.get_ticks()
+                self.image = self.animation_list[0]
+                self.target = None
+
