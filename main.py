@@ -30,7 +30,7 @@ mixer.init()
   
 # Loading the song 
 mixer.music.load("assets/audio/music/frogsong1.wav") 
-  
+song = 1  
 # Setting the volume 
 mixer.music.set_volume(0.7) 
   
@@ -218,6 +218,17 @@ fast_button = Button(c.SCREEN_WIDTH + 45, 760, fast_image, False)
 run = True
 
 while run:
+
+    if not mixer.music.get_busy():
+
+        if song == 1:
+            song = 2
+            mixer.music.load("assets/audio/music/frogsong2.wav") 
+            mixer.music.play()
+        else:
+            song = 1
+            mixer.music.load("assets/audio/music/frogsong1.wav") 
+            mixer.music.play()
 
     clock.tick(c.FPS)
 
