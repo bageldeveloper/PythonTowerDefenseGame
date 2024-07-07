@@ -26,7 +26,7 @@ selected_turret = None
 #load music
 
 # Starting the mixer 
-mixer.init() 
+mixer.init(909099) 
   
 # Loading the song 
 mixer.music.load("assets/audio/music/frogsong1.wav") 
@@ -56,7 +56,7 @@ for x in range(1, c.TURRET_LEVELS+1):
     turret_spritesheets.append(turret_sheet)
 
 enemy_images = {
-    "fly": pg.transform.scale(pg.image.load('assets/images/enemies/flysheet.png').convert_alpha(), (320,80)),
+    "fly": pg.transform.scale(pg.image.load('assets/images/enemies/flysheet.png').convert_alpha(), (480,80)),
     "ant": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     "mosquito": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     "cockroach": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
@@ -118,11 +118,17 @@ def create_turret(mouse_pos):
         for turret in turret_group:
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 space_is_free = False
+                upgrade_sound = pg.mixer.Sound("assets/audio/sfx/invalid.wav")
+                pg.mixer.Sound.play(upgrade_sound)
         if space_is_free:
             new_turret = Turret(turret_spritesheets, mouse_tile_x, mouse_tile_y, screen)
             turret_group.add(new_turret)
-
+            upgrade_sound = pg.mixer.Sound("assets/audio/sfx/build.wav")
+            pg.mixer.Sound.play(upgrade_sound)
             world.money -= c.BUY_COST
+    else:
+        upgrade_sound = pg.mixer.Sound("assets/audio/sfx/invalid.wav")
+        pg.mixer.Sound.play(upgrade_sound)
 
 def select_turret(mouse_pos):
     mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
@@ -296,6 +302,10 @@ while run:
                 if placing_turrets:
                     if world.money >= c.BUY_COST:
                         create_turret(mouse_pos)
+                    else:
+                        upgrade_sound = pg.mixer.Sound("assets/audio/sfx/notenoughmoney.wav")
+                        pg.mixer.Sound.play(upgrade_sound)
+
                 else:
                     selected_turret = select_turret(mouse_pos)
     #check if level has been started or not
@@ -342,6 +352,8 @@ while run:
         if selected_turret.upgrade_level < c.TURRET_LEVELS:
             if upgrade_button.draw(screen):
                 if world.money >= t.TURRET_DATA[selected_turret.upgrade_level].get("cost"):
+                    upgrade_sound = mixer.Sound("assets/audio/sfx/upgrade.wav")
+                    mixer.Sound.play(upgrade_sound)
                     selected_turret.upgrade()
                     world.money -=  t.TURRET_DATA[selected_turret.upgrade_level-1].get("cost")
    

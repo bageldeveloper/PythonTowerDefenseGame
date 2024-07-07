@@ -23,32 +23,30 @@ class Enemy(pg.sprite.Sprite):
 
         self.image = self.animation_list[self.frame_index]
         self.rect = self.image.get_rect()
-    
+        
     def load_images(self, current_sheet):
         size = current_sheet.get_height()
         animation_list = []
         sheet_width = current_sheet.get_width()
-
-
-
         for x in range(c.ENEMY_ANIMATION_STEPS):
-            # Ensure the subsurface rectangle does not exceed the sheet width
-            if (x + 1) * size <= sheet_width:
+            if (x + 1) * size <= sheet_width:  # Changed the condition to allow for correct slicing
                 try:
-                    temp_img = current_sheet.subsurface(x * size, 0, size, size)
+                    temp_img = current_sheet.subsurface(pg.Rect(x * size, 0, size, size))
                     animation_list.append(temp_img)
                 except ValueError as e:
-                                      break
+                    print(f"Error loading image at index {x}: {e}")
+                    break
             else:
                 break
 
         return animation_list
 
     def update(self, world):
-        self.move(world)
-        self.rotate()
+      
         self.check_alive(world)
         self.play_animation()
+        self.move(world)
+        self.rotate()
 
     def move(self, world):
         # define target waypoint
@@ -63,12 +61,15 @@ class Enemy(pg.sprite.Sprite):
         # calculate distance to target hehe
         dist = self.movement.length()
         # check if remaining is greater that speed
-        if dist >= (self.speed * world.game_speed):
+        if dist > (self.speed * world.game_speed):
             self.pos += self.movement.normalize() * (self.speed * world.game_speed)
         else:
             if dist != 0:
                 self.pos += self.movement.normalize() * dist
             self.target_waypoint += 1
+            if self.target_waypoint < len(self.waypoints):
+                self.target = Vector2(self.waypoints[self.target_waypoint])
+                self.movement = self.target - self.pos
 
     def rotate(self):
         # calculate distance to next waypoint
@@ -82,9 +83,11 @@ class Enemy(pg.sprite.Sprite):
             self.image = pg.transform.flip(self.image, True, False)
         elif dist[0]+dist[1] != 0:
             self.image = pg.transform.flip(self.image, False, False)
-    
     def check_alive(self, world):
         if self.health <= 0:
+            upgrade_sound = pg.mixer.Sound("assets/audio/sfx/flydie.wav")
+            pg.mixer.Sound.play(upgrade_sound)
+
             world.killed_enemies += 1
             world.money += c.KILL_REWARD
             self.kill()
@@ -93,7 +96,7 @@ class Enemy(pg.sprite.Sprite):
         #update image
         self.image = self.animation_list[self.frame_index]
         #check if enough time has passed
-        if pg.time.get_ticks() - self.update_time > c.ANIMATION_DELAY:
+        if pg.time.get_ticks() - self.update_time > c.ENEMY_ANIMATION_DELAY:
             self.update_time = pg.time.get_ticks()
             self.frame_index += 1
             #check if animation is done

@@ -54,6 +54,7 @@ class Turret(pg.sprite.Sprite):
     def update(self, enemy_group, world):
         #if target picked, play firin anim
         if self.target:
+          
             self.play_animation()
         else:
             #search for new target once turret cooled down
@@ -72,6 +73,9 @@ class Turret(pg.sprite.Sprite):
                 y_dist = enemy.pos[1] - self.y
                 dist = math.sqrt(x_dist ** 2+ y_dist ** 2)
                 if dist < self.range:
+                    upgrade_sound = pg.mixer.Sound("assets/audio/sfx/frogeat.wav")
+                    pg.mixer.Sound.play(upgrade_sound)
+
                     self.target = enemy
                     self.tounge = 1
 
