@@ -11,9 +11,10 @@ pg.init()
 
 clock = pg.time.Clock()
 
-screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
-
+# screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
+game_screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 pg.display.set_caption("Tower Defense")
+
 
 #game variables
 game_over = False
@@ -176,6 +177,35 @@ def display_turret():
             opaque_cursor_turret.fill((255, 50, 50, 128), None, pg.BLEND_RGBA_MULT)
             screen.blit(opaque_cursor_turret, draw_pos)
 
+def fullscreen_fix(game_surface):
+    """ Sets full screen display mode and draws a square in the top left """
+    # Set the display mode to the current screen resolution
+    # screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+
+    # create a square pygame surface
+    
+
+    # draw a square in the top left
+
+    # make the largest square surface that will fit on the screen
+    screen_width = game_screen.get_width()
+    screen_height = game_screen.get_height()
+    smallest_side = min(screen_width, screen_height)
+    screen_surface = pg.Surface((screen_width, screen_height))
+
+    # scale the game surface up to the larger surface
+    pg.transform.scale(
+        game_surface,  # surface to be scaled
+        (screen_width, screen_height),  # scale up to (width, height)
+        screen_surface)  # surface that game_surface will be scaled onto
+
+    # place the larger surface in the centre of the screen
+    game_screen.blit(
+        screen_surface,
+        (0,  # x pos
+        0))  # y pos
+
+    pg.display.flip()
 
 #CREATE WORLD
 
@@ -224,7 +254,7 @@ fast_button = Button(c.SCREEN_WIDTH + 45, 760, fast_image, False)
 run = True
 
 while run:
-
+    screen = pg.Surface((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
     if not mixer.music.get_busy():
 
         if song == 1:
@@ -413,6 +443,10 @@ while run:
     ####################################
     # SCREEN DISPLAY SECTION
     ##################################
-    pg.display.flip()
+    # pg.display.flip()
+
+    fullscreen_fix(screen)
+
+    
 
 pg.quit()
