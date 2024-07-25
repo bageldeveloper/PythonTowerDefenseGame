@@ -12,7 +12,7 @@ pg.init()
 clock = pg.time.Clock()
 
 # screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
-game_screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+game_screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT), pg.RESIZABLE)
 pg.display.set_caption("Tower Defense")
 
 
@@ -253,6 +253,7 @@ win_button = Button(360, 440, win_image, True)
 fast_button = Button(c.SCREEN_WIDTH + 45, 760, fast_image, False)
 run = True
 
+
 while run:
     screen = pg.Surface((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
     if not mixer.music.get_busy():
@@ -320,13 +321,14 @@ while run:
             world.spawned_enemies += 1
             last_enemy_spawn = pg.time.get_ticks()
     for event in pg.event.get():
+        
         if event.type == pg.QUIT:
             run = False
         # mouse click
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             mouse_pos = pg.mouse.get_pos()
             # check if mouse on game are
-            if mouse_pos[0] < c.SCREEN_WIDTH and mouse_pos[1] < c.SCREEN_HEIGHT:
+            if mouse_pos[0] < game_screen.get_width() and mouse_pos[1] < game_screen.get_height():
                 selected_turret = None
                 clear_selection()
                 if placing_turrets:
