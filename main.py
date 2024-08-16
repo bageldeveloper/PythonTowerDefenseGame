@@ -191,19 +191,34 @@ def fullscreen_fix(game_surface):
     screen_width = game_screen.get_width()
     screen_height = game_screen.get_height()
     smallest_side = min(screen_width, screen_height)
-    screen_surface = pg.Surface((screen_width, screen_height))
+    if screen_width<=screen_height:
+        
+        screen_surface = pg.Surface((smallest_side, smallest_side*0.75))
+        pg.transform.scale(
+            game_surface,  # surface to be scaled
+            (smallest_side, smallest_side*0.75),  # scale up to (width, height)
+            screen_surface)  # surface that game_surface will be scaled onto
+            # place the larger surface in the centre of the screen
+        game_screen.blit(
+            screen_surface,
+            (0,  # x pos
+            0))  # y pos
 
-    # scale the game surface up to the larger surface
-    pg.transform.scale(
-        game_surface,  # surface to be scaled
-        (screen_width, screen_height),  # scale up to (width, height)
-        screen_surface)  # surface that game_surface will be scaled onto
+    else:
+        
+        screen_surface = pg.Surface((round(smallest_side*1.33, 0), smallest_side))
+        pg.transform.scale(
+            game_surface,  # surface to be scaled
+            (round(smallest_side*1.33, 0), smallest_side),  # scale up to (width, height)
+            screen_surface)  # surface that game_surface will be scaled onto
 
-    # place the larger surface in the centre of the screen
-    game_screen.blit(
-        screen_surface,
-        (0,  # x pos
-        0))  # y pos
+            # place the larger surface in the centre of the screen
+        game_screen.blit(
+            screen_surface,
+            (0,  # x pos
+            0))  # y pos
+
+
 
     pg.display.flip()
 
