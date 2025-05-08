@@ -119,18 +119,18 @@ class Turret(pg.sprite.Sprite):
         surface.blit(self.image, self.rect)
         if self.upgrade_level < 4:
             if self.target:
-                self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ea6262", 20)
+                self.draw_line_round_corners(surface, (self.x-10, self.y-10), self.target.pos, "#ea6262", 20)
             elif 1 - (self.tounge * 1.8) > 0.2:
-                self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ea6262", 20)
+                self.draw_retract_line_round_corners(surface, (self.x-10, self.y-10), self.last_tounge_pos, "#ea6262", 20)
             else:
                 self.tounge = 1
         else:
             if self.target:
-                self.draw_line_round_corners(self.screen, (self.x-10, self.y-10), self.target.pos, "#ff0034", 20)
-                self.draw_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.target.pos, "#ffdfe6", 10)
+                self.draw_line_round_corners(surface, (self.x-10, self.y-10), self.target.pos, "#ff0034", 20)
+                self.draw_line_round_corners(surface, (self.x - 10, self.y - 10), self.target.pos, "#ffdfe6", 10)
             elif 1 - (self.tounge * 1.8) > 0.3:
-                self.draw_retract_line_round_corners(self.screen, (self.x-10, self.y-10), self.last_tounge_pos, "#ff0034", 20)
-                self.draw_retract_line_round_corners(self.screen, (self.x - 10, self.y - 10), self.last_tounge_pos,
+                self.draw_retract_line_round_corners(surface, (self.x-10, self.y-10), self.last_tounge_pos, "#ff0034", 20)
+                self.draw_retract_line_round_corners(surface, (self.x - 10, self.y - 10), self.last_tounge_pos,
                                                      "#ffdfe6", 10)
             else:
                 self.tounge = 1

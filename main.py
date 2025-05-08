@@ -10,7 +10,8 @@ from pygame import mixer
 pg.init()
 
 clock = pg.time.Clock()
-
+global screen_surface
+global mouse_pos
 # screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT))
 game_screen = pg.display.set_mode((c.SCREEN_WIDTH + c.SIDE_BAR, c.SCREEN_HEIGHT), pg.RESIZABLE)
 pg.display.set_caption("Tower Defense")
@@ -137,7 +138,9 @@ def select_turret(mouse_pos):
     for turret in turret_group:
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 return turret
-        #check if turret is already there:
+            return None
+    return None
+    #check if turret is already there:
 
 def clear_selection():
     for turret in turret_group:
@@ -152,7 +155,7 @@ def display_data():
 
 def display_turret():
     cursor_rect = cursor_turret.get_rect()
-    cursor_pos = (pg.mouse.get_pos()[0] * (pg.mouse.get_pos()[0]/game_screen.get_width()), pg.mouse.get_pos()[1] * (pg.mouse.get_pos()[1]/game_screen.get_height()))
+    cursor_pos = mouse_pos
     cursor_rect.center = cursor_pos
 
     mouse_tile_x = cursor_pos[0] // c.TILE_SIZE
@@ -178,6 +181,7 @@ def display_turret():
             screen.blit(opaque_cursor_turret, draw_pos)
 
 def fullscreen_fix(game_surface):
+    global screen_surface
     """ Sets full screen display mode and draws a square in the top left """
     # Set the display mode to the current screen resolution
     # screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
@@ -205,7 +209,6 @@ def fullscreen_fix(game_surface):
              (screen_height-screen_width*0.75)/2))  # y pos
 
     else:
-        
         screen_surface = pg.Surface((round(smallest_side*1.33, 0), smallest_side))
         pg.transform.scale(
             game_surface,  # surface to be scaled
@@ -341,7 +344,8 @@ while run:
             run = False
         # mouse click
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            mouse_pos = (pg.mouse.get_pos()[0] * (pg.mouse.get_pos()[0]/game_screen.get_width()), pg.mouse.get_pos()[1] * (pg.mouse.get_pos()[1]/game_screen.get_height()))
+            # if mouse_pos is None:
+            #     mouse_pos = pg.mouse.get_pos()
             # check if mouse on game are
             if mouse_pos[0] < game_screen.get_width() and mouse_pos[1] < game_screen.get_height():
                 selected_turret = None
@@ -381,7 +385,7 @@ while run:
 
     screen.blit(ui_background_image, (880,0))
 
-    if selected_turret == None:
+    if selected_turret is None:
 
         if turret_button.draw(screen) and placing_turrets == False:
             placing_turrets = True
@@ -462,14 +466,12 @@ while run:
     ####################################
     # SCREEN DISPLAY SECTION
     ##################################
-    # pg.display.flip()
-    cursor_pos = (pg.mouse.get_pos()[0] * (game_screen.get_width()/game_screen.get_width()*1.33), pg.mouse.get_pos()[1] * (pg.mouse.get_pos()[1]/game_screen.get_height()))
-    # cursor_pos = pg.mouse.get_pos()
-    draw_pos = (cursor_pos)
-    opaque_cursor_turret = cursor_turret.copy()
-    opaque_cursor_turret.fill((255, 50, 50, 128), None, pg.BLEND_RGBA_MULT)
-    screen.blit(opaque_cursor_turret, draw_pos)
     fullscreen_fix(screen)
+    # pg.display.flip()
+
+    mouse_pos = (((pg.mouse.get_pos()[0]-(game_screen.get_width()/2)) * (game_screen.get_width() / screen_surface.get_width())) + (screen.get_width()/2),
+                  ((pg.mouse.get_pos()[1]-(game_screen.get_height()/2)) * (game_screen.get_height() / screen_surface.get_height())) + (screen.get_height()/2))
+    # cursor_pos = pg.mouse.get_pos()
 
     
 
