@@ -59,7 +59,7 @@ for x in range(1, c.TURRET_LEVELS+1):
 
 enemy_images = {
     "fly": pg.transform.scale(pg.image.load('assets/images/enemies/flysheet.png').convert_alpha(), (480,80)),
-    "ant": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
+    "ant": pg.transform.scale(pg.image.load('assets/images/enemies/ant.png').convert_alpha(), (80, 80)),
     "mosquito": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     "cockroach": pg.transform.scale(pg.image.load('assets/images/enemies/fly.png').convert_alpha(), (80, 80)),
     
@@ -114,7 +114,7 @@ def draw_text(text, font, text_col, x, y):
 def create_turret(mouse_pos):
     mouse_tile_x = mouse_pos[0] // c.TILE_SIZE
     mouse_tile_y = mouse_pos[1] // c.TILE_SIZE
-    if (mouse_tile_x + 1, mouse_tile_y + 1) not in c.PATH_TILES and (mouse_tile_x + 1, mouse_tile_y + 1) not in c.OBSTACLE_TILES:
+    if (mouse_tile_x + 1, mouse_tile_y + 1) not in c.PATH_TILES and (mouse_tile_x + 1, mouse_tile_y + 1) not in c.OBSTACLE_TILES and mouse_tile_x <= 11:
         #check if turret is already there:
         space_is_free = True
         for turret in turret_group:
@@ -138,7 +138,6 @@ def select_turret(mouse_pos):
     for turret in turret_group:
             if  (mouse_tile_x, mouse_tile_y) == (turret.tile_x, turret.tile_y):
                 return turret
-            return None
     return None
     #check if turret is already there:
 
@@ -347,7 +346,7 @@ while run:
             # if mouse_pos is None:
             #     mouse_pos = pg.mouse.get_pos()
             # check if mouse on game are
-            if mouse_pos[0] < game_screen.get_width() and mouse_pos[1] < game_screen.get_height():
+            if mouse_pos[0] < game_screen.get_width()-440 and mouse_pos[1] < game_screen.get_height():
                 selected_turret = None
                 clear_selection()
                 if placing_turrets:

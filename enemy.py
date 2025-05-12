@@ -12,6 +12,7 @@ class Enemy(pg.sprite.Sprite):
         self.target_waypoint = 1
         self.health = ENEMY_DATA.get(enemy_type)["health"]
         self.speed = ENEMY_DATA.get(enemy_type)["speed"]
+        self.reward = ENEMY_DATA.get(enemy_type)["reward"]
         self.angle = 0
     
 

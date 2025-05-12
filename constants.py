@@ -1,3 +1,5 @@
+import enemy_data as en
+
 ROWS = 11
 COLS = 11
 TILE_SIZE = 80
@@ -19,7 +21,7 @@ DAMAGE = 5
 #enemy constants
 ENEMY_ANIMATION_STEPS = 6
 ENEMY_ANIMATION_DELAY = 60
-TOTAL_LEVELS = 4
+TOTAL_LEVELS = len(en.ENEMY_SPAWN_DATA)
 
 FPS = 60
 
